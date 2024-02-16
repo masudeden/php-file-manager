@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- Dropzone CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.min.css">
+
+    <!-- Custom CSS for Spinner -->
+    <style>
+        #loadingSpinner {
+            display: none;
+        }
+
+        .url-upload-section {
+            display: none;
+        }
+
+        .no-bottom-border {
+            border-bottom: none;
+        }
+
+        #myDropzone {
+            border: 2px dashed #00F; /* Change color as needed */
+            border-radius: 5px;
+            background: white; /* Set background color if desired */
+            min-height: 150px; /* Set minimum height for better visibility */
+            padding: 20px; /* Optional padding for better appearance */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- File Upload Form -->
+    <div class="container-fluid mt-4">
+        <!-- Top Menu Bar with Search -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 main-nav">
+            <a class="navbar-brand"> File Manager </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <div class="col-xs-6 col-sm-5"><a href="index2.html"><i class="fa fa-home" aria-hidden="true"></i></a></div>
+            </div>
+        </nav>
+
+    <!-- Path and Upload Tabs Section -->
+            <div class="card col-md-12" style="background-color: #F8F8F8;">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="uploadFilesTab" href="#" onclick="toggleTab('uploadFilesTab')"><i
+                                    class="fa fa-arrow-circle-o-up"></i> Upload Files</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="uploadUrlTab" href="#" onclick="toggleTab('uploadUrlTab')"><i
+                                    class="fa fa-link"></i> Upload from URL</a>
+                        </li>
+                    </ul>
+                </div>
+            
+
+                <!-- Upload Files Section -->
+                <div id="fileUploaderSection">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-text text-end">
+                                <a href="index2.html" class="btn btn-link"><i class="fa fa-chevron-circle-left go-back"></i> Back</a>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <form action="upload_file.php" class="dropzone" id="myDropzone">
+                                <!-- Additional Dropzone settings can be added here -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Upload from URL Section -->
+            <div id="urlUploaderSection" class="url-upload-section">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-text text-end">
+                            <a href="index2.html" class="btn btn-link"><i class="fa fa-chevron-circle-left go-back"></i> Back</a>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <input type="text" id="urlInput" class="form-control" placeholder="https://example.com/file.jpg">
+                            <button type="button" class="btn btn-primary" id="uploadFromUrlBtn">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Messages Section -->
+        <div id="uploadMessages" class="mt-2">
+            <!-- Bootstrap alert messages will be displayed here -->
+        </div>
+    </div>
+</div>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Dropzone JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Initialize Dropzone
+            Dropzone.options.myDropzone = {
+                url: "upload_file.php",
+                paramName: "file", // The name that will be used to transfer the file
+                maxFilesize: 5, // MB
+                maxFiles: 5,
+                acceptedFiles: ".jpg, .jpeg, .png, .gif",
+                addRemoveLinks: true,
+                dictDefaultMessage: "Drop files here or click to upload",
+                dictRemoveFile: "Remove",
+                dictCancelUpload: "Cancel Upload",
+                dictMaxFilesExceeded: "You can only upload 5 files at a time.",
+                init: function () {
+                    this.on("success", function (file, response) {
+                        // Handle success
+                        console.log("File uploaded successfully:", response);
+                    });
+                    this.on("error", function (file, errorMessage) {
+                        // Handle errors
+                        console.error("Error uploading file:", errorMessage);
+                    });
+                }
+            };
+
+            // Toggle between Upload Files and Upload from URL sections
+            $("#uploadFilesTab").click(function () {
+                $("#fileUploaderSection").show();
+                $("#urlUploaderSection").hide();
+                // Clear any existing messages when switching tabs
+                $("#uploadMessages").empty();
+            });
+
+            $("#uploadUrlTab").click(function () {
+                $("#fileUploaderSection").hide();
+                $("#urlUploaderSection").show();
+                // Clear any existing messages when switching tabs
+                $("#uploadMessages").empty();
+            });
+
+            // Handle Upload from URL button click
+            $("#uploadFromUrlBtn").click(function () {
+                var url = $("#urlInput").val();
+
+                // Validate URL
+                if (!url) {
+                    // Display error message
+                    showUploadMessage("Please enter a valid URL.", "danger");
+                    return;
+                }
+
+                // Perform the upload from URL logic
+                $.ajax({
+                    url: "upload_from_url.php",
+                    type: "POST",
+                    data: { url: url },
+                    success: function (response) {
+                        // Handle the server response
+                        console.log("Upload from URL successful:", response);
+
+                        // Display success message
+                        showUploadMessage("Upload success!", "success");
+
+                        // Clear the input box
+                        $("#urlInput").val("");
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors
+                        console.error("Error uploading from URL:", error);
+
+                        // Display error message
+                        showUploadMessage("Upload failed. Please try again.", "danger");
+                    }
+                });
+            });
+
+            // Function to display Bootstrap alert messages
+            function showUploadMessage(message, type) {
+                var alertClass = "alert-" + type;
+                var alertHtml = '<div class="alert ' + alertClass +
+                    ' alert-dismissible fade show" role="alert">' +
+                    message +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                    '</div>';
+
+                // Append the alert message to the messages div
+                $("#uploadMessages").html(alertHtml);
+            }
+
+        });
+
+        function toggleTab(tabId) {
+            // Remove 'active' class from all tabs
+            $('.nav-link').removeClass('active');
+
+            // Add 'active' class to the clicked tab
+            $('#' + tabId).addClass('active');
+        }
+    </script>
+</body>
+
+</html>

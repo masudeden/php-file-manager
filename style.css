@@ -1,0 +1,17 @@
+#loadingSpinner {
+    display: none;
+}
+
+.breadcrumb-item {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    margin-left: 5px;
+}
+
+.dataTables_filter {
+    display: none;
+}

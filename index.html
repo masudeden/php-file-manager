@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- DataTable CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+
+    <!-- Dropzone CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <!-- Top Menu Bar with Search -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4 main-nav">
+            <a class="navbar-brand">File Manager</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="col-xs-6 col-sm-5">
+                    <a href="index2.html"><i class="fa fa-home" aria-hidden="true"></i></a>
+                </div>
+                <div class="col-xs-6 col-sm-7">
+                    <ul class="navbar-nav justify-content-end">
+                        <li class="nav-item mr-2">
+                            <div class="input-group input-group-sm mr-1" style="margin-top:4px;">
+                                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" id="search-addon">
+                                <div class="input-group-append">
+                                    <span class="input-group-text brl-0 brr-0" id="search-addon2"><i class="fa fa-search"></i></span>
+                                </div>
+                                <div class="input-group-append btn-group">
+                                    <span class="input-group-text dropdown-toggle brl-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="." id="js-search-modal" data-bs-toggle="modal" data-bs-target="#searchModal">Advanced Search</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a title="Upload" class="nav-link" href="#" id="uploadLink" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <i class="fas fa-cloud-upload-alt"></i> Upload
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a title="New Item" class="nav-link" href="#createNewItem" data-bs-toggle="modal" data-bs-target="#createNewItem"><i class="fa fa-plus-square"></i> New Item</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-light">
+                <li class="breadcrumb-item active" id="breadcrumb-folder"></li>
+            </ol>
+        </nav>
+        <div id="fileListContainer" class="mt-4">
+            <!-- File list will be displayed here -->
+        </div>
+        <div id="fileManagerContainer"></div>
+
+    </div>
+
+<!-- Create New Item Modal -->
+<div class="modal fade" id="createNewItem">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Display current path in the modal -->
+                <p>Current Path: <span id="currentPath"></span></p>
+
+                <!-- Create New Item Form -->
+                <form id="createNewItemForm">
+                    <div class="mb-3">
+                        <label for="itemName" class="form-label">Item Name</label>
+                        <input type="text" class="form-control" id="itemName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="itemType" class="form-label">Select Item Type</label>
+                        <select class="form-select" id="itemType" required>
+                            <option value="file">File</option>
+                            <option value="folder">Folder</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="uploadFilesTab" data-bs-toggle="tab" href="#uploadFiles" role="tab" aria-controls="uploadFiles" aria-selected="true">Upload Files</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="uploadFromUrlTab" data-bs-toggle="tab" href="#uploadFromUrl" role="tab" aria-controls="uploadFromUrl" aria-selected="false">Upload From URL</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content mt-2">
+                    <!-- Upload Files Tab Content -->
+                    <div class="tab-pane fade show active" id="uploadFiles" role="tabpanel" aria-labelledby="uploadFilesTab">
+                        <!-- Dropzone Container -->
+                        <form id="dropzoneForm" class="dropzone" action="upload_file.php" method="post"></form>
+                    </div>
+
+                    <!-- Upload From URL Tab Content -->
+                    <div class="tab-pane fade" id="uploadFromUrl" role="tabpanel" aria-labelledby="uploadFromUrlTab">
+                        <!-- Upload From URL Form -->
+                        <form id="uploadFromUrlForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input type="url" class="form-control" id="urlInput" placeholder="Enter URL" required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="clearUpload">Clear</button>
+                <button type="button" class="btn btn-primary" id="submitUpload" disabled>Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTable JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+    <!-- Dropzone JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.min.js"></script>
+    
+    <!-- Your Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
